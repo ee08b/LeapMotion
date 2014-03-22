@@ -2,12 +2,11 @@
 #include <stdarg.h>
 #include <math.h>
 #include <vector>
-
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <stdlib.h>
-
 #include <objloader.hpp>
+#include "draw.hpp"
 
 std::vector<glm::vec3> vertices;
 std::vector<glm::vec3> normals;
@@ -150,6 +149,98 @@ void setlight(){
 }
 
 
+void draw(void* s){
+    
+  char* filename = (char *) s;
+
+    loadOBJ(filename, vertices, normals);
+    
+    GLFWwindow* window;
+    glfwSetErrorCallback(error_callback);
+
+    if (!glfwInit())
+        exit(EXIT_FAILURE);
+    window = glfwCreateWindow(640, 480, "Draw", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+
+    
+    glfwMakeContextCurrent(window);
+    glfwSetKeyCallback(window, key_callback);
+    
+    glEnable (GL_LIGHTING);
+    glEnable (GL_LIGHT0);
+
+
+    while (!glfwWindowShouldClose(window))
+    {   
+        //Added Code
+        glClearColor (0.0,0.0,0.0,1.0);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        //
+        float ratio;
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        //ratio = width / (float) height;
+        //glViewport(0, 0, width, height);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        //glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        //glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+        //glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+
+        //Added Code
+        setlight();
+    
+        glTranslatef(translate_x,  0.0, 0.0);
+        glTranslatef(0.0, translate_y,  0.0);
+        glRotatef( rotate_x, 1.0, 0.0, 0.0 );
+        glRotatef( rotate_y, 0.0, 1.0, 0.0 );
+        glScalef( scale, scale, scale);
+
+        for (unsigned int i = 0; i < vertices.size(); i+=3) {
+            if(!mesh) 
+                glBegin(GL_POLYGON);
+            else
+                glBegin(GL_LINE_LOOP);
+            glColor3f(1.0, 1.0, 1.0); 
+            for (unsigned int j = 0; j < 3; j++) {
+                glNormal3f(normals[i+j].x, normals[i+j].y, normals[i+j].x);
+                glVertex3f(vertices[i+j].x, vertices[i+j].y, vertices[i+j].z);
+            }
+            glEnd();
+        }
+        
+
+        /*
+        glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
+        glBegin(GL_TRIANGLES);
+        glColor3f(1.f, 0.f, 0.f);
+        glVertex3f(-0.6f, -0.4f, 0.f);
+        glColor3f(0.f, 1.f, 0.f);
+        glVertex3f(0.6f, -0.4f, 0.f);
+        glColor3f(0.f, 0.f, 1.f);
+        glVertex3f(0.f, 0.6f, 0.f);
+        glEnd();      
+        */
+        
+        glfwSwapBuffers(window);
+        //glfwPollEvents();
+	wait();
+    }
+    
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
+  
+}
+
+/*
 
 int main(int argc, char* argv[])
 {
@@ -219,7 +310,7 @@ int main(int argc, char* argv[])
             }
             glEnd();
         }
-        //
+        
 
         /*
         glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
@@ -234,10 +325,12 @@ int main(int argc, char* argv[])
         */
         
         glfwSwapBuffers(window);
-        glfwPollEvents();
+        //glfwPollEvents();
+	wait();
     }
     
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
+*/

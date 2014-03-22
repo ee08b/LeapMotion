@@ -1,0 +1,2 @@
+cscope -Rqb
+g++ -Wall -ggdb -I . ../include -c main.cpp 

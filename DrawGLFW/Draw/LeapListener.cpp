@@ -5,34 +5,21 @@
 * https://developer.leapmotion.com/sdk_agreement, or another agreement         *
 * between Leap Motion and you, your company or other organization.             *
 \******************************************************************************/
-
 #include <iostream>
 #include "Leap.h"
 #include <GL/glut.h>
 #include <glm/glm.hpp>
 #include "draw.hpp"
 #include <pthread.h>
+#include "LeapListener.hpp"
 
 using namespace Leap;
 
-
-
-class SampleListener : public Listener {
-  public:
-    virtual void onInit(const Controller&);
-    virtual void onConnect(const Controller&);
-    virtual void onDisconnect(const Controller&);
-    virtual void onExit(const Controller&);
-    virtual void onFrame(const Controller&);
-    virtual void onFocusGained(const Controller&);
-    virtual void onFocusLost(const Controller&);
-};
-
-void SampleListener::onInit(const Controller& controller) {
+void LeapListener::onInit(const Controller& controller) {
   std::cout << "Initialized" << std::endl;
 }
 
-void SampleListener::onConnect(const Controller& controller) {
+void LeapListener::onConnect(const Controller& controller) {
   std::cout << "Connected" << std::endl;
   controller.enableGesture(Gesture::TYPE_CIRCLE);
   controller.enableGesture(Gesture::TYPE_KEY_TAP);
@@ -41,16 +28,16 @@ void SampleListener::onConnect(const Controller& controller) {
 
 }
 
-void SampleListener::onDisconnect(const Controller& controller) {
+void LeapListener::onDisconnect(const Controller& controller) {
   //Note: not dispatched when running in a debugger.
   std::cout << "Disconnected" << std::endl;
 }
 
-void SampleListener::onExit(const Controller& controller) {
+void LeapListener::onExit(const Controller& controller) {
   std::cout << "Exited" << std::endl;
 }
 
-void SampleListener::onFrame(const Controller& controller) {
+void LeapListener::onFrame(const Controller& controller) {
   // Get the most recent frame and report some basic information
   const Frame frame = controller.frame();
   std::cout << "Frame id: " << frame.id()
@@ -161,49 +148,34 @@ void SampleListener::onFrame(const Controller& controller) {
   }
 }
 
-void SampleListener::onFocusGained(const Controller& controller) {
+void LeapListener::onFocusGained(const Controller& controller) {
   std::cout << "Focus Gained" << std::endl;
 }
 
-void SampleListener::onFocusLost(const Controller& controller) {
+void LeapListener::onFocusLost(const Controller& controller) {
   std::cout << "Focus Lost" << std::endl;
 }
 
-void SampleListener::LeapHandler(){
-  
-  // Create a sample listener and controller
-  SampleListener listener;
-  Controller controller;
 
-  // Have the sample listener receive events from the controller
-  controller.addListener(listener);
 
-  // Keep this process running until Enter is pressed
-  std::cout << "Press Enter to quit..." << std::endl;
-  std::cin.get();
 
-  // Remove the sample listener when done
-  controller.removeListener(listener);
-  
-}
-
-int main(int argc, char* argv[]) {
-
- // init_draw(argc, argv);   
-
-  // Create a sample listener and controller
-  SampleListener listener;
-  Controller controller;
-
-  // Have the sample listener receive events from the controller
-  controller.addListener(listener);
-
-  // Keep this process running until Enter is pressed
-  std::cout << "Press Enter to quit..." << std::endl;
-  std::cin.get();
-
-  // Remove the sample listener when done
-  controller.removeListener(listener);
-
-  return 0;
-}
+// int main(int argc, char* argv[]) {
+// 
+//  init_draw(argc, argv);   
+// 
+//   Create a sample listener and controller
+//   LeapListener listener;
+//   Controller controller;
+// 
+//   Have the sample listener receive events from the controller
+//   controller.addListener(listener);
+// 
+//   Keep this process running until Enter is pressed
+//   std::cout << "Press Enter to quit..." << std::endl;
+//   std::cin.get();
+// 
+//   Remove the sample listener when done
+//   controller.removeListener(listener);
+// 
+//   return 0;
+// }

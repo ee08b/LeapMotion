@@ -11,7 +11,7 @@ all: cscope draw
 .cpp.o: 
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< 
 
-draw: draw.o objloader.o 
+draw:   main.o draw.o objloader.o LeapListener.o
 	$(CC) $^ $(LINKLIB) -o $@ $(OTHER)
 
 #objloader: draw.o objloader.o
