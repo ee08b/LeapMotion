@@ -5,8 +5,6 @@
 #include "draw.hpp"
 #include <pthread.h>
 
-using namespace Leap;
-
 class LeapListener : public Listener {
   public:
     virtual void onInit(const Controller&);

@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <objloader.hpp>
 
+static void error_callback(int error, const char* description);
 void draw(char* filename);
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void setlight();
 void draw(char* filename);
