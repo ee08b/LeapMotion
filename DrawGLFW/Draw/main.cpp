@@ -9,7 +9,6 @@
 using namespace Leap;
 
 void LeapHandler(){
-  
   // Create a sample listener and controller
   LeapListener listener;
   Controller controller;
