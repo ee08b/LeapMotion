@@ -1,0 +1,114 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <queue>
+
+#define NUM_THREADS 2
+#define PRODUCER 0
+#define CONSUMER 1
+
+/* just for testing */
+#define NUM_ITEMS 10
+
+using namespace std;
+
+class Queueable {
+    private:
+        bool lastItem;
+    public:
+        Queueable(bool li=false) : lastItem(li) {}
+        ~Queueable() {};
+        bool isLastItem() { return lastItem; }
+};
+
+/*
+ * TODO: modify this class so that it includes the info that we need to process
+ * the work. In particular, it must include the info to re-draw of objects.
+ * Notice that it must inherit from Queueable in order to be put in the queue.
+ */
+class WorkItem: public Queueable {
+    public:
+        int val;
+        WorkItem(int v) : val(v) {}
+};
+
+/* global variables */
+pthread_mutex_t mutex;              // mutex for the workqueue 
+pthread_cond_t condvar;             // condition variable for the workqueue
+std::queue<Queueable*> workqueue;   // queue containing the items to be processed
+
+void *producer(void * args)
+{
+    int cnt = NUM_ITEMS;
+
+    while (cnt) {
+        pthread_mutex_lock(&mutex);
+            
+        /* produce a new item here and push it into the queue */
+        WorkItem *item = new WorkItem(cnt);
+        workqueue.push(item);
+        pthread_cond_signal(&condvar);
+            
+        cnt--;
+        pthread_mutex_unlock(&mutex);
+    }
+
+    /* inserting last token indicating that no more work will be produced */
+    Queueable *last = new Queueable(true);
+    pthread_mutex_lock(&mutex);
+    workqueue.push(last);
+    pthread_cond_signal(&condvar);
+    pthread_mutex_unlock(&mutex);
+
+    printf("done producing work\n");
+    return NULL;
+}
+
+void *consumer(void * args)
+{
+    WorkItem *item;
+    
+    while (true) {
+        pthread_mutex_lock(&mutex);
+            
+            if (workqueue.empty())
+                pthread_cond_wait(&condvar, &mutex);
+            
+            item = reinterpret_cast<WorkItem*>(workqueue.front());
+            workqueue.pop();
+        pthread_mutex_unlock(&mutex);
+
+        if (item->isLastItem())
+            break;
+
+        /* process the item here */
+        printf("processing item: %d\n", item->val);
+    }
+    
+    printf("done processing work\n");
+    return NULL;
+}
+
+/*
+int main(int argc, const char *argv[])
+{
+    pthread_t threads[NUM_THREADS];
+    void * __thread_args_not_used__ = NULL;
+
+    // init mutex and condition variable 
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&condvar, NULL);
+
+    // init the threads 
+    pthread_create(&threads[PRODUCER], NULL, producer, __thread_args_not_used__);
+    pthread_create(&threads[CONSUMER], NULL, consumer, __thread_args_not_used__);
+    
+    // for for threads to complete 
+    pthread_join(threads[PRODUCER], NULL);
+    pthread_join(threads[CONSUMER], NULL);
+    
+    return 0;
+}
+*/
+
